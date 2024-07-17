@@ -2,6 +2,7 @@ package com.resolveservicos.services;
 
 import com.resolveservicos.entities.dto.CustomerRecord;
 import com.resolveservicos.entities.model.Customer;
+import com.resolveservicos.handlers.ResourceNotFoundException;
 import com.resolveservicos.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class CustomerService {
 
     public void deleteCustomer(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Customer with id " + customerId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
 
         customerRepository.delete(customer);
     }
