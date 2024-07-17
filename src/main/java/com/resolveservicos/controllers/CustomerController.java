@@ -23,6 +23,17 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.createCustomer(customerRecord));
     }
 
+    @GetMapping("/findByName/{name}")
+    public ResponseEntity<Customer> getCustomerByName(@PathVariable String name) {
+        return ResponseEntity.ok(customerService.getCustomerByName(name));
+    }
+
+    @PatchMapping("/update/{customerId}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable Long customerId, @RequestBody CustomerRecord customerRecord) {
+        return ResponseEntity.ok(customerService.updateCustomer(customerId, customerRecord));
+    }
+
+
     @GetMapping("/getAllCustomers")
     public ResponseEntity<List<Customer>> getAllCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers());
