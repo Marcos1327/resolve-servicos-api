@@ -1,4 +1,4 @@
-package com.resolveservicos.entities;
+package com.resolveservicos.entities.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -21,8 +21,7 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(Long customerId, String name, String contactNumber, String address, LocalDate createdAt) {
-        this.customerId = customerId;
+    public Customer(String name, String contactNumber, String address, LocalDate createdAt) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.address = address;
