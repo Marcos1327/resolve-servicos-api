@@ -40,7 +40,7 @@
 - **Backend:** Spring Framework (Spring Boot)
 - **Banco de Dados:** MySQL
 
-## 5. Usuários-Alvo
+## 5. Cliente-Alvo
 
 - **Empresas:** Pequenas e médias empresas que oferecem serviços de manutenção.
 - **Indivíduos:** Profissionais autônomos e clientes que necessitam de serviços de manutenção em suas residências.
