@@ -2,9 +2,11 @@ package com.resolveservicos.entities.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -19,15 +21,14 @@ public class Customer {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "scheduling_id")
-    @JsonBackReference
-    private Scheduling scheduling;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Scheduling> scheduling;
 
     public Customer() {
     }
 
-    public Customer(String name, String contactNumber, String address, LocalDate createdAt, Scheduling scheduling) {
+    public Customer(String name, String contactNumber, String address, LocalDate createdAt, List<Scheduling> scheduling) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.address = address;
@@ -75,11 +76,11 @@ public class Customer {
         this.createdAt = createdAt;
     }
 
-    public Scheduling getScheduling() {
+    public List<Scheduling> getScheduling() {
         return scheduling;
     }
 
-    public void setScheduling(Scheduling scheduling) {
+    public void setScheduling(List<Scheduling> scheduling) {
         this.scheduling = scheduling;
     }
 }

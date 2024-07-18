@@ -18,9 +18,10 @@ public class Scheduling {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long schedulingId;
 
-    @OneToMany(mappedBy = "scheduling", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Customer> customers;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    @JsonBackReference
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "service_type_id")
@@ -37,8 +38,8 @@ public class Scheduling {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate createdAt;
 
-    public Scheduling(List<Customer> customers, ServiceType serviceType, LocalDate schedulingDate, LocalTime schedulingTime, Status status, LocalDate createdAt) {
-        this.customers = customers;
+    public Scheduling(Customer customer, ServiceType serviceType, LocalDate schedulingDate, LocalTime schedulingTime, Status status, LocalDate createdAt) {
+        this.customer = customer;
         this.serviceType = serviceType;
         this.schedulingDate = schedulingDate;
         this.schedulingTime = schedulingTime;
@@ -57,12 +58,12 @@ public class Scheduling {
         this.schedulingId = schedulingId;
     }
 
-    public List<Customer> getCustomers() {
-        return customers;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomers(List<Customer> customers) {
-        this.customers = customers;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public ServiceType getServiceType() {

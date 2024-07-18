@@ -37,6 +37,11 @@ public class CustomerService {
         return customer;
     }
 
+    public Customer getCustomerById(Long customerId) {
+        Customer customer = findById(customerId);
+        return customer;
+    }
+
     public Customer getCustomerByName (String name) {
         Customer customer = customerRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Customer not found with name: " + name));
         return customer;

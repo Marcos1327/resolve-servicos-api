@@ -33,6 +33,11 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.updateCustomer(customerId, customerRecord));
     }
 
+    @GetMapping("/findById/{customerId}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long customerId) {
+        return ResponseEntity.ok(customerService.getCustomerById(customerId));
+    }
+
 
     @GetMapping("/getAllCustomers")
     public ResponseEntity<List<Customer>> getAllCustomers() {
