@@ -1,6 +1,6 @@
 package com.resolveservicos.services;
 
-import com.resolveservicos.Enums.Status;
+import com.resolveservicos.enums.Status;
 import com.resolveservicos.entities.dto.SchedulingRecord;
 import com.resolveservicos.entities.model.Scheduling;
 import com.resolveservicos.handlers.BusinessException;

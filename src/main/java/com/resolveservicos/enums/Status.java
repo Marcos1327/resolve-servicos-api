@@ -1,4 +1,4 @@
-package com.resolveservicos.Enums;
+package com.resolveservicos.enums;
 
 public enum Status {
 
