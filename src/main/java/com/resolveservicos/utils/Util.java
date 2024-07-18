@@ -3,6 +3,7 @@ package com.resolveservicos.utils;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -23,10 +24,23 @@ public class Util {
         return date.isBefore(LocalDate.now());
     }
 
-    // Crie um metodo que verifica se o horario
-    public boolean isTimeBeforeNow(LocalTime time) {
-        return time.isBefore(LocalTime.now());
+    public boolean isTimeBeforeNow(String date, String time) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        LocalDate appointmentDate = LocalDate.parse(date, dateFormatter);
+        LocalTime appointmentTime = LocalTime.parse(time, timeFormatter);
+
+        LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
+        LocalDateTime now = LocalDateTime.now();
+
+        if (appointmentDate.isEqual(now.toLocalDate())) {
+            return !appointmentTime.isBefore(now.toLocalTime());
+        }
+
+        return true;
     }
+
 
     public LocalTime convertStringToLocalTime(String time) {
         return LocalTime.parse(time);

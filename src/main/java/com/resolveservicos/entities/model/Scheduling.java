@@ -32,7 +32,7 @@ public class Scheduling {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime schedulingTime;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
