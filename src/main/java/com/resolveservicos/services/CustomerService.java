@@ -4,6 +4,7 @@ import com.resolveservicos.entities.dto.CustomerRecord;
 import com.resolveservicos.entities.model.Customer;
 import com.resolveservicos.handlers.ResourceNotFoundException;
 import com.resolveservicos.repositories.CustomerRepository;
+import com.resolveservicos.utils.Util;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,14 +14,20 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final Util util;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, Util util) {
         this.customerRepository = customerRepository;
+        this.util = util;
     }
 
 
     public Customer createCustomer(CustomerRecord customerRecord) {
         Customer customer = new Customer();
+
+        if (util.isNullOrEmpty(customerRecord.name()) || util.isNullOrEmpty(customerRecord.contactNumber()) || util.isNullOrEmpty(customerRecord.address())) {
+            throw new ResourceNotFoundException("All fields are required!");
+        }
         customer.setName(customerRecord.name());
         customer.setContactNumber(customerRecord.contactNumber());
         customer.setAddress(customerRecord.address());
