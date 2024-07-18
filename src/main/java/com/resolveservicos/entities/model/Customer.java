@@ -1,5 +1,6 @@
 package com.resolveservicos.entities.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
@@ -18,14 +19,20 @@ public class Customer {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "scheduling_id")
+    @JsonBackReference
+    private Scheduling scheduling;
+
     public Customer() {
     }
 
-    public Customer(String name, String contactNumber, String address, LocalDate createdAt) {
+    public Customer(String name, String contactNumber, String address, LocalDate createdAt, Scheduling scheduling) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.address = address;
         this.createdAt = createdAt;
+        this.scheduling = scheduling;
     }
 
     public Long getCustomerId() {
@@ -66,5 +73,13 @@ public class Customer {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Scheduling getScheduling() {
+        return scheduling;
+    }
+
+    public void setScheduling(Scheduling scheduling) {
+        this.scheduling = scheduling;
     }
 }

@@ -1,6 +1,9 @@
 package com.resolveservicos.entities.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "service_type")
@@ -11,6 +14,10 @@ public class ServiceType {
     private Long serviceTypeId;
     private String serviceTypeName;
     private String description;
+
+    @OneToMany(mappedBy = "serviceType", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Scheduling> scheduling;
 
     public ServiceType() {
     }
