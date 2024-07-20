@@ -1,6 +1,8 @@
 package com.resolveservicos.entities.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -13,8 +15,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     private String name;
+    @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate createdAt;
 
     public User() {
