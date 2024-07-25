@@ -1,5 +1,7 @@
 package com.resolveservicos.utils;
 
+import com.resolveservicos.entities.model.Role;
+import com.resolveservicos.enums.RoleName;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -45,4 +47,5 @@ public class Util {
     public LocalTime convertStringToLocalTime(String time) {
         return LocalTime.parse(time);
     }
+
 }

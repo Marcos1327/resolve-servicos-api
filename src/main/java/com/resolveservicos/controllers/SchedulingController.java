@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/scheduling")
+@RequestMapping("api/v1/schedulings")
 public class SchedulingController {
 
     private final SchedulingService schedulingService;
@@ -42,7 +42,7 @@ public class SchedulingController {
         return ResponseEntity.ok(scheduling);
     }
 
-    @GetMapping("/schedulings")
+    @GetMapping
     public ResponseEntity<List<Scheduling>> getAllSchedulings() {
         List<Scheduling> appointments = schedulingService.getAllSchedulings();
         return ResponseEntity.ok(appointments);

@@ -1,6 +1,8 @@
 package com.resolveservicos.controllers;
 
-import com.resolveservicos.entities.dto.UserDTO;
+import com.resolveservicos.entities.dto.LoginRecord;
+import com.resolveservicos.entities.dto.RecoveryJWTTokenRecord;
+import com.resolveservicos.entities.dto.UserRecord;
 import com.resolveservicos.entities.model.User;
 import com.resolveservicos.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,15 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<RecoveryJWTTokenRecord> authenticateUser(@RequestBody LoginRecord loginRecord){
+        RecoveryJWTTokenRecord recoveryJWTTokenRecord = userService.authenticateUser(loginRecord);
+
+        return ResponseEntity.ok(recoveryJWTTokenRecord);
+    }
+
     @PostMapping("/create")
-    public ResponseEntity<User> create(@RequestBody UserDTO userDTO){
+    public ResponseEntity<User> create(@RequestBody UserRecord userDTO){
         return ResponseEntity.ok(userService.create(userDTO));
     }
 

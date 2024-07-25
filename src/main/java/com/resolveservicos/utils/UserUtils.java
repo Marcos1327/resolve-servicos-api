@@ -1,0 +1,19 @@
+package com.resolveservicos.utils;
+
+import com.resolveservicos.entities.dto.UserRecord;
+import com.resolveservicos.entities.model.Role;
+import com.resolveservicos.enums.RoleName;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class UserUtils {
+
+    public static Role convertRoleNameToRole(UserRecord userDTO) {
+        Map<RoleName, Role> roleMap = new HashMap<>();
+        roleMap.put(RoleName.ROLE_CUSTOMER, new Role(RoleName.ROLE_CUSTOMER));
+        roleMap.put(RoleName.ROLE_ADMINISTRATOR, new Role(RoleName.ROLE_ADMINISTRATOR));
+
+        return roleMap.get(userDTO.role());
+    }
+}

@@ -23,7 +23,7 @@ public class ServiceTypeController {
         return ResponseEntity.ok(serviceTypeService.createServiceType(serviceTypeDTO));
     }
 
-    @GetMapping("/find-all")
+    @GetMapping
     public ResponseEntity<List<ServiceType>> findAllServiceTypes() {
         return ResponseEntity.ok(serviceTypeService.getAllServiceTypes());
     }
