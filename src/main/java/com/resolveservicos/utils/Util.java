@@ -15,6 +15,10 @@ public class Util {
     public boolean isNullOrEmpty(String value) {
         return value == null || value.isEmpty();
     }
+    public boolean isNullOrEmptyToEnumValue(RoleName value) {
+        return value == null;
+    }
+
 
 
     public LocalDate convertStringToLocalDate(String date) {

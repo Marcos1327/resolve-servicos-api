@@ -10,18 +10,18 @@ import com.resolveservicos.entities.model.UserDetailsImpl;
 import com.resolveservicos.enums.RoleName;
 import com.resolveservicos.handlers.ResourceNotFoundException;
 import com.resolveservicos.repositories.UserRepository;
+import com.resolveservicos.utils.UserUtils;
 import com.resolveservicos.utils.Util;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.resolveservicos.utils.UserUtils.convertRoleNameToRole;
 
@@ -30,15 +30,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final Util util;
+    private final UserUtils userUtils;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    public UserService(UserRepository userRepository, Util util, AuthenticationManager authenticationManager, TokenService tokenService) {
+    public UserService(UserRepository userRepository, Util util, UserUtils userUtils, AuthenticationManager authenticationManager, TokenService tokenService) {
         this.userRepository = userRepository;
         this.util = util;
+        this.userUtils = userUtils;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
     }
@@ -66,6 +68,41 @@ public class UserService {
         return user;
     }
 
+    public User updateUser(UserRecord userDTO, Long id) {
+        User user = findById(id);
+        User userLogged = getLoggedUser();
+
+        if (!userLogged.getUserId().equals(user.getUserId())) {
+           boolean isAdmin = userLogged.getRoles().stream().anyMatch(role -> role.getRoleName().equals(RoleName.ROLE_ADMINISTRATOR));
+            if (!isAdmin) {
+                throw new IllegalArgumentException("You do not have permission to update this user.");
+            }
+        }
+
+        if (!util.isNullOrEmpty(userDTO.name())) {
+            user.setName(userDTO.name());
+        }
+
+        if (!util.isNullOrEmpty(userDTO.email())) {
+            user.setEmail(userDTO.email());
+        }
+
+        if (!util.isNullOrEmpty(userDTO.password())) {
+            user.setPassword(passwordEncoder().encode(userDTO.password()));
+        }
+
+        if (userDTO.role() != null && !util.isNullOrEmpty(userDTO.role().name())) {
+            // FALTA ARRUMAR A PARTE DE ATUALIZAR O ROLE DE UM USUARIO
+            Role newRole = userUtils.convertRoleNameToRole(userDTO.role());
+            user.setRoles(List.of(newRole));
+        }
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -91,6 +128,13 @@ public class UserService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         return new RecoveryJWTTokenRecord(tokenService.generateToken(userDetails));
+    }
+
+
+    private User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        return userRepository.findByEmail(currentPrincipalName).orElseThrow(() -> new ResourceNotFoundException("UserLogged not found with email: " + currentPrincipalName));
     }
 
 }
