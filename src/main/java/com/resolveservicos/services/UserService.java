@@ -12,6 +12,8 @@ import com.resolveservicos.handlers.ResourceNotFoundException;
 import com.resolveservicos.repositories.UserRepository;
 import com.resolveservicos.utils.UserUtils;
 import com.resolveservicos.utils.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,12 +23,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.resolveservicos.utils.UserUtils.convertRoleNameToRole;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
 
     private final UserRepository userRepository;
     private final Util util;
@@ -92,12 +98,18 @@ public class UserService {
         }
 
         if (userDTO.role() != null && !util.isNullOrEmpty(userDTO.role().name())) {
-            // FALTA ARRUMAR A PARTE DE ATUALIZAR O ROLE DE UM USUARIO
             Role newRole = userUtils.convertRoleNameToRole(userDTO.role());
-            user.setRoles(List.of(newRole));
+            updateRole(user, newRole);
         }
 
-        userRepository.save(user);
+        try {
+            logger.info("Saving user with ID: {}", id);
+            userRepository.save(user);
+            logger.info("User with ID: {} updated successfully", id);
+        } catch (UnsupportedOperationException e) {
+            logger.error("Failed to save user with ID: {}", id, e);
+            throw e;
+        }
 
         return user;
     }
@@ -135,6 +147,13 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         return userRepository.findByEmail(currentPrincipalName).orElseThrow(() -> new ResourceNotFoundException("UserLogged not found with email: " + currentPrincipalName));
+    }
+
+    private void updateRole(User user, Role role) {
+        List<Role> roles = new ArrayList<>(user.getRoles());
+        roles.clear();
+        roles.add(role);
+        user.setRoles(roles);
     }
 
 }
