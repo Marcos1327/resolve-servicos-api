@@ -25,6 +25,11 @@ public class Customer {
     @JsonManagedReference
     private List<Scheduling> scheduling;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
+
     public Customer() {
     }
 
@@ -82,5 +87,13 @@ public class Customer {
 
     public void setScheduling(List<Scheduling> scheduling) {
         this.scheduling = scheduling;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

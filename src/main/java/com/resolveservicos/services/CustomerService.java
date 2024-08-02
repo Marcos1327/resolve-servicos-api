@@ -2,6 +2,8 @@ package com.resolveservicos.services;
 
 import com.resolveservicos.entities.dto.CustomerRecord;
 import com.resolveservicos.entities.model.Customer;
+import com.resolveservicos.entities.model.User;
+import com.resolveservicos.handlers.BusinessException;
 import com.resolveservicos.handlers.ResourceNotFoundException;
 import com.resolveservicos.repositories.CustomerRepository;
 import com.resolveservicos.utils.Util;
@@ -14,16 +16,24 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final UserService userService;
     private final Util util;
 
-    public CustomerService(CustomerRepository customerRepository, Util util) {
+    public CustomerService(CustomerRepository customerRepository, UserService userService, Util util) {
         this.customerRepository = customerRepository;
+        this.userService = userService;
         this.util = util;
     }
 
 
     public Customer createCustomer(CustomerRecord customerRecord) {
         Customer customer = new Customer();
+
+        User user = userService.getLoggedUser();
+
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found with id: " + user.getUserId());
+        }
 
         if (util.isNullOrEmpty(customerRecord.name()) || util.isNullOrEmpty(customerRecord.contactNumber()) || util.isNullOrEmpty(customerRecord.address())) {
             throw new ResourceNotFoundException("All fields are required!");
@@ -32,6 +42,7 @@ public class CustomerService {
         customer.setContactNumber(customerRecord.contactNumber());
         customer.setAddress(customerRecord.address());
         customer.setCreatedAt(LocalDate.now());
+        customer.setUser(user);
 
         customerRepository.save(customer);
         return customer;
@@ -43,12 +54,21 @@ public class CustomerService {
     }
 
     public Customer getCustomerByName (String name) {
-        Customer customer = customerRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Customer not found with name: " + name));
+        User userLogged = userService.getLoggedUser();
+        Customer customer = customerRepository.findByNameAndUser(name, userLogged).orElseThrow(() -> new ResourceNotFoundException("Customer not found with name: " + name));
         return customer;
     }
 
     public Customer updateCustomer(Long customerId, CustomerRecord customerRecord) {
         Customer customer = findById(customerId);
+        User userLogged = userService.getLoggedUser();
+
+        if (userLogged.getUserId() != null) {
+            customer.setUser(userLogged);
+            if (userLogged == null) {
+                throw new ResourceNotFoundException("User not found with id: " + userLogged.getUserId());
+            }
+        }
 
         if (customerRecord.name() != null) {
             customer.setName(customerRecord.name());
@@ -65,17 +85,23 @@ public class CustomerService {
     }
 
     private Customer findById(Long customerId) {
-        return customerRepository.findById(customerId)
+        User userLogged = userService.getLoggedUser();
+        return customerRepository.findByCustomerIdAndUser(customerId, userLogged)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+
     }
 
     public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+        try {
+            User userLogged = userService.getLoggedUser();
+            return customerRepository.findAllByUser(userLogged);
+        } catch (Exception e) {
+            throw new BusinessException("No one user logged");
+        }
     }
 
     public void deleteCustomer(Long customerId) {
         Customer customer = findById(customerId);
-
         customerRepository.delete(customer);
     }
 }

@@ -143,7 +143,7 @@ public class UserService {
     }
 
 
-    private User getLoggedUser() {
+    public User getLoggedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         return userRepository.findByEmail(currentPrincipalName).orElseThrow(() -> new ResourceNotFoundException("UserLogged not found with email: " + currentPrincipalName));
