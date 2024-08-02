@@ -35,6 +35,10 @@ public class User {
     @JsonManagedReference
     private List<Customer> customers;
 
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Scheduling> schedulings;
+
     public User() {
     }
 
@@ -99,5 +103,13 @@ public class User {
 
     public void setCustomers(List<Customer> customers) {
         this.customers = customers;
+    }
+
+    public List<Scheduling> getSchedulings() {
+        return schedulings;
+    }
+
+    public void setSchedulings(List<Scheduling> schedulings) {
+        this.schedulings = schedulings;
     }
 }

@@ -36,6 +36,11 @@ public class Scheduling {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
+
     public Scheduling(Customer customer, ServiceType serviceType, LocalDate schedulingDate, LocalTime schedulingTime, Status status, LocalDate createdAt) {
         this.customer = customer;
         this.serviceType = serviceType;
@@ -102,5 +107,13 @@ public class Scheduling {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

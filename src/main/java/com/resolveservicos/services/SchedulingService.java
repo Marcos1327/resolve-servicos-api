@@ -1,5 +1,6 @@
 package com.resolveservicos.services;
 
+import com.resolveservicos.entities.model.User;
 import com.resolveservicos.enums.Status;
 import com.resolveservicos.entities.dto.SchedulingRecord;
 import com.resolveservicos.entities.model.Scheduling;
@@ -17,20 +18,27 @@ public class SchedulingService {
 
     private final SchedulingRepository schedulingRepository;
     private final CustomerService customerService;
-
+    private final UserService userService;
     private final ServiceTypeService serviceTypeService;
 
     private final Util util;
 
-    public SchedulingService(SchedulingRepository schedulingRepository, CustomerService customerService, ServiceTypeService serviceTypeService, Util util) {
+    public SchedulingService(SchedulingRepository schedulingRepository, CustomerService customerService, UserService userService, ServiceTypeService serviceTypeService, Util util) {
         this.schedulingRepository = schedulingRepository;
         this.customerService = customerService;
+        this.userService = userService;
         this.serviceTypeService = serviceTypeService;
         this.util = util;
     }
 
     public Scheduling create(SchedulingRecord schedulingRecord) {
         Scheduling scheduling = new Scheduling();
+
+        User userLogged = getUserLogged();
+
+        if (userLogged == null) {
+            throw new BusinessException("UserLogged not found with id: " + userLogged.getUserId());
+        }
 
         if (schedulingRecord.customerId() == null || schedulingRecord.serviceTypeId() == null || schedulingRecord.schedulingDate() == null || schedulingRecord.schedulingTime() == null) {
             throw new BusinessException("customerId, serviceTypeId, schedulingDate and schedulingTime are required fields!");
@@ -50,6 +58,7 @@ public class SchedulingService {
         scheduling.setSchedulingTime(util.convertStringToLocalTime(schedulingRecord.schedulingTime()));
         scheduling.setStatus(Status.AGENDADO);
         scheduling.setCreatedAt(LocalDate.now());
+        scheduling.setUser(userLogged);
 
         schedulingRepository.save(scheduling);
 
@@ -57,7 +66,8 @@ public class SchedulingService {
     }
 
     public Scheduling update(Long schedulingId, SchedulingRecord schedulingRecord) {
-        Scheduling scheduling = schedulingRepository.findById(schedulingId).orElseThrow(() -> new ResourceNotFoundException("Scheduling not found!"));
+        User userLogged = getUserLogged();
+        Scheduling scheduling = schedulingRepository.findBySchedulingIdAndUser(schedulingId, userLogged).orElseThrow(() -> new ResourceNotFoundException("Scheduling not found!"));
 
         if(scheduling.getStatus() == Status.CANCELADO) {
             throw new BusinessException("The scheduling has already been cancelled. Create another scheduling!");
@@ -90,6 +100,10 @@ public class SchedulingService {
             scheduling.setSchedulingTime(util.convertStringToLocalTime(schedulingRecord.schedulingTime()));
         }
 
+        if (scheduling.getUser() == null) {
+            scheduling.setUser(userLogged);
+        }
+
         scheduling.setCreatedAt(LocalDate.now());
 
         schedulingRepository.save(scheduling);
@@ -98,13 +112,15 @@ public class SchedulingService {
     }
 
     public void cancel(Long schedulingId) {
-        Scheduling scheduling = schedulingRepository.findById(schedulingId).orElseThrow(() -> new ResourceNotFoundException("Scheduling not found!"));
+        User userLogged = getUserLogged();
+        Scheduling scheduling = schedulingRepository.findBySchedulingIdAndUser(schedulingId, userLogged).orElseThrow(() -> new ResourceNotFoundException("Scheduling not found!"));
         scheduling.setStatus(Status.CANCELADO);
         schedulingRepository.save(scheduling);
     }
 
     public Scheduling conclude(Long schedulingId) {
-        Scheduling scheduling = schedulingRepository.findById(schedulingId).orElseThrow(() -> new ResourceNotFoundException("Scheduling not found!"));
+        User userLogged = getUserLogged();
+        Scheduling scheduling = schedulingRepository.findBySchedulingIdAndUser(schedulingId, userLogged).orElseThrow(() -> new ResourceNotFoundException("Scheduling not found!"));
 
         if(scheduling.getStatus() != Status.CANCELADO && scheduling.getStatus() != Status.CONCLUIDO) {
             scheduling.setStatus(Status.CONCLUIDO);
@@ -116,6 +132,11 @@ public class SchedulingService {
     }
 
     public List<Scheduling> getAllSchedulings() {
-        return schedulingRepository.findAll();
+        User userLogged = getUserLogged();
+        return schedulingRepository.findAllByUser(userLogged);
+    }
+
+    private User getUserLogged() {
+        return userService.getLoggedUser();
     }
 }
