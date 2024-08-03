@@ -5,6 +5,7 @@ import com.resolveservicos.entities.dto.RecoveryJWTTokenRecord;
 import com.resolveservicos.entities.dto.UserRecord;
 import com.resolveservicos.entities.model.User;
 import com.resolveservicos.services.UserService;
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<User> create(@RequestBody UserRecord userDTO){
+    public ResponseEntity<User> create(@RequestBody UserRecord userDTO) throws MessagingException {
         return ResponseEntity.ok(userService.create(userDTO));
     }
 

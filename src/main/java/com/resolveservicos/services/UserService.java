@@ -1,6 +1,7 @@
 package com.resolveservicos.services;
 
 import com.resolveservicos.configurations.security.service.TokenService;
+import com.resolveservicos.emailMessage.EmailMessage;
 import com.resolveservicos.entities.dto.LoginRecord;
 import com.resolveservicos.entities.dto.RecoveryJWTTokenRecord;
 import com.resolveservicos.entities.dto.UserRecord;
@@ -12,6 +13,7 @@ import com.resolveservicos.handlers.ResourceNotFoundException;
 import com.resolveservicos.repositories.UserRepository;
 import com.resolveservicos.utils.UserUtils;
 import com.resolveservicos.utils.Util;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,17 +44,19 @@ public class UserService {
     private PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, Util util, UserUtils userUtils, AuthenticationManager authenticationManager, TokenService tokenService) {
+    public UserService(UserRepository userRepository, Util util, UserUtils userUtils, AuthenticationManager authenticationManager, TokenService tokenService, EmailService emailService) {
         this.userRepository = userRepository;
         this.util = util;
         this.userUtils = userUtils;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.emailService = emailService;
     }
 
 
-    public User create(UserRecord userDTO) {
+    public User create(UserRecord userDTO) throws MessagingException {
         User user = new User();
 
         if (util.isNullOrEmpty(userDTO.name()) || util.isNullOrEmpty(userDTO.email()) || util.isNullOrEmpty(userDTO.password())) {
@@ -69,7 +73,9 @@ public class UserService {
         user.setCreatedAt(LocalDate.now());
         user.setRoles(List.of(convertRoleNameToRole(userDTO)));
 
-        userRepository.save(user);
+//        userRepository.save(user);
+
+        emailService.sendEmailWithAttachment(user.getEmail(), EmailMessage.createTitle(user), EmailMessage.messageToNewUser(user, userDTO.password()) + "\n\n", "images/logo.png");
 
         return user;
     }
