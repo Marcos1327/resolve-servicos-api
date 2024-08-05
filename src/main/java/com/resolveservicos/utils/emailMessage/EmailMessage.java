@@ -68,7 +68,7 @@ public class EmailMessage {
                 + "            <img src=\"https://uploaddeimagens.com.br/images/004/819/894/full/Resolve_20240802_192808_0000-1-fotor-bg-remover-2024080220148.png?1722639811\" alt=\"Logo Resolve Serviços\">\n"
                 + "        </header>\n"
                 + "        <div class=\"container\">\n"
-                + "            <h1>Olá, <strong> " + user.getName().toUpperCase() + "</strong>!</h1>\n"
+                + "            <h1>Olá, <strong> " + user.getName().split(" ")[0] + "</strong>!</h1>\n"
                 + "            <p>Seja bem-vindo ao Resolve Serviços!</p>\n"
                 + "            <p>Estamos muito felizes em ter você conosco. O Resolve Serviços foi criada para ajudar você a resolver todos os problemas de manutenção do seu lar com facilidade e eficiência.</p>\n"
                 + "            <p>Aqui está o que você pode fazer agora:</p>\n"

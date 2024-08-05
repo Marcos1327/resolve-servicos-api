@@ -1,6 +1,7 @@
 package com.resolveservicos.services;
 
 import com.resolveservicos.configurations.security.service.TokenService;
+import com.resolveservicos.handlers.BusinessException;
 import com.resolveservicos.utils.emailMessage.EmailMessage;
 import com.resolveservicos.entities.dto.LoginRecord;
 import com.resolveservicos.entities.dto.RecoveryJWTTokenRecord;
@@ -61,11 +62,11 @@ public class UserService {
         User user = new User();
 
         if (util.isNullOrEmpty(userDTO.name()) || util.isNullOrEmpty(userDTO.email()) || util.isNullOrEmpty(userDTO.password())) {
-            throw new IllegalArgumentException("Name, email and password are required");
+            throw new BusinessException("Name, email and password are required");
         }
 
         if (userRepository.existsByEmail(userDTO.email())) {
-            throw new IllegalArgumentException("User already exists with email: " + userDTO.email());
+            throw new BusinessException("User already exists with email: " + userDTO.email());
         }
 
         user.setName(userDTO.name());
@@ -86,7 +87,7 @@ public class UserService {
         if (!userLogged.getUserId().equals(user.getUserId())) {
            boolean isAdmin = userLogged.getRoles().stream().anyMatch(role -> role.getRoleName().equals(RoleName.ROLE_ADMINISTRATOR));
             if (!isAdmin) {
-                throw new IllegalArgumentException("You do not have permission to update this user.");
+                throw new BusinessException("You do not have permission to update this user.");
             }
         }
 
