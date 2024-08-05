@@ -1,7 +1,7 @@
 package com.resolveservicos.services;
 
 import com.resolveservicos.configurations.security.service.TokenService;
-import com.resolveservicos.emailMessage.EmailMessage;
+import com.resolveservicos.utils.emailMessage.EmailMessage;
 import com.resolveservicos.entities.dto.LoginRecord;
 import com.resolveservicos.entities.dto.RecoveryJWTTokenRecord;
 import com.resolveservicos.entities.dto.UserRecord;

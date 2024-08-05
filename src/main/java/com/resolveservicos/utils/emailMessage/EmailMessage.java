@@ -1,11 +1,11 @@
-package com.resolveservicos.emailMessage;
+package com.resolveservicos.utils.emailMessage;
 
 import com.resolveservicos.entities.model.User;
 
 public class EmailMessage {
 
     public static String createTitle(User user) {
-        return user.getName() + "seu cadastro foi realizado com sucesso!";
+        return user.getName() + " seu cadastro foi realizado com sucesso!";
     }
 
     public static String messageToNewUser(User user, String password) {

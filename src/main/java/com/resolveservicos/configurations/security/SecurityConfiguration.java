@@ -25,7 +25,6 @@ public class SecurityConfiguration {
     };
 
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED_ADMIN = {
-            "/api/v1/schedulings",
             "/api/v1/schedulings/**",
             "/api/v1/customers/**",
             "/api/v1/users/**",
@@ -33,7 +32,7 @@ public class SecurityConfiguration {
     };
 
     public static final String [] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED_CUSTOMER = {
-//            "/api/v1/schedulings"
+            "/api/v1/schedulings"
     };
 
     public SecurityConfiguration(UserAuthenticationFilter userAuthenticationFilter) {
