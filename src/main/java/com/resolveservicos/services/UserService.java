@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.resolveservicos.utils.UserUtils.convertRoleNameToRole;
 
@@ -73,10 +74,8 @@ public class UserService {
         user.setCreatedAt(LocalDate.now());
         user.setRoles(List.of(convertRoleNameToRole(userDTO)));
 
-//        userRepository.save(user);
-
-        emailService.sendEmailWithAttachment(user.getEmail(), EmailMessage.createTitle(user), EmailMessage.messageToNewUser(user, userDTO.password()) + "\n\n", "images/logo.png");
-
+        userRepository.save(user);
+        sendEmail(userDTO, user);
         return user;
     }
 
@@ -162,4 +161,13 @@ public class UserService {
         user.setRoles(roles);
     }
 
+    private void sendEmail(UserRecord userDTO, User user) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                emailService.sendEmailWithAttachment(user.getEmail(), EmailMessage.createTitle(user), EmailMessage.messageToNewUser(user, userDTO.password()), null);
+            } catch (MessagingException e) {
+                logger.error("Failed to send email to user with email: {}", user.getEmail(), e);
+            }
+        });
+    }
 }

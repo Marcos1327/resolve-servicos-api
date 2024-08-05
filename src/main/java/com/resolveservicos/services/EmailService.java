@@ -35,7 +35,6 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(title);
         helper.setText(message, true);
-        helper.addAttachment("logo.png", new ClassPathResource(pathToAttachment));
 
         javaMailSender.send(content);
 
